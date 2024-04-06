@@ -448,7 +448,7 @@ defineExpose({
 					>
 						取消
 					</n-button>
-					<n-button type="primary" @click=""> 确认 </n-button>
+					<n-button type="primary"> 确认 </n-button>
 				</div>
 			</template>
 		</n-modal>

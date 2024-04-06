@@ -229,7 +229,7 @@ const renderLabel = ({ option }) => {
 				overflow: 'hidden',
 				'white-space': 'nowrap',
 				'text-overflow': 'ellipsis',
-				'padding-bottom': '1px',
+				// 'padding-top': '1px',
 			},
 		},
 		`${option.label}`,
@@ -237,9 +237,11 @@ const renderLabel = ({ option }) => {
 }
 // 前置图标渲染
 const renderPrefix = ({ option }) => {
-	return h(NIcon, null, {
-		default: () => h(option.type === 'directory' ? Folder : FileTrayFull),
-	})
+	return option.type === 'directory'
+		? null
+		: h('div', {
+				className: 'i-ic:round-insert-drive-file',
+			})
 }
 // 处理节点加载
 const handleNodeLoad = (node) => {
@@ -516,7 +518,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .main {
-	height: calc(100vh - 30px);
+	height: 100%;
 	.resource-manager {
 		.frame-size-setting {
 			transition: all ease 0.25s;
@@ -545,9 +547,11 @@ onMounted(async () => {
 					border-radius: 0;
 					align-items: center;
 					.n-tree-node-switcher {
-						width: 16px;
+						width: 16px !important;
 						height: 16px;
 						margin-left: 4px;
+						margin-right: -1px;
+						margin-bottom: 1px;
 					}
 					.n-tree-node-content {
 						min-height: 22px;

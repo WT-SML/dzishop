@@ -61,7 +61,8 @@
 				"height": 720,
 				"width": 1280,
 				"center": true,
-				"theme": "Light"
+				"theme": "Light",
+				"decorations": false
 			}
 		]
 	}
