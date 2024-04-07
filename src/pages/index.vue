@@ -14,6 +14,7 @@ import { useMagicKeys, useStorage } from '@vueuse/core'
 import os from 'os'
 import { open } from '@tauri-apps/api/dialog'
 import { readDir, BaseDirectory } from '@tauri-apps/api/fs'
+import { invoke } from '@tauri-apps/api/tauri'
 
 // 本地缓存
 // const storage = require('electron-json-storage')
@@ -177,7 +178,7 @@ const websiteAddressSubmit = () => {
 }
 
 // 点击打开文件夹按钮
-const openFilder = async () => {
+const openFolder = async () => {
 	const folderPath = await open({
 		directory: true,
 	})
@@ -191,33 +192,33 @@ const openFilder = async () => {
 }
 // 获取一个目录下的项目
 const getDirectoryItem = async (dirPath) => {
-	const entries = await readDir(dirPath, {
-		dir: BaseDirectory.AppData,
-		recursive: true,
-	})
-	function processEntries(entries) {
-		for (let entry of entries) {
-			entry.type = entry.children ? 'directory' : 'file'
-			entry.label = entry.name
-			entry.key = entry.path
-			entry.isLeaf = !entry.children
-			if (entry.children) {
-				processEntries(entry.children)
-			}
-		}
-	}
-	processEntries(entries)
-	const ret = {
-		name: dirPath,
-		path: dirPath,
-		children: entries,
-		type: 'directory',
-		label: dirPath,
-		key: dirPath,
-		isLeaf: false,
-	}
-	console.log(ret)
-	return ret
+	const res = await invoke('get_directory_item', { dirPath })
+	console.log(res)
+	return {}
+	// const entries = await readDir(dirPath, {
+	// 	dir: BaseDirectory.AppData,
+	// 	recursive: false,
+	// })
+	// for (let entry of entries) {
+	// 	entry.type = entry.children ? 'directory' : 'file'
+	// 	entry.label = entry.name
+	// 	entry.key = entry.path
+	// 	entry.isLeaf = !entry.children
+	// 	if (entry.children !== undefined) {
+	// 		delete entry.children
+	// 	}
+	// }
+	// const name = dirPath.split('\\').at(-1)
+	// const ret = {
+	// 	name: name,
+	// 	path: dirPath,
+	// 	children: entries,
+	// 	type: 'directory',
+	// 	label: name,
+	// 	key: dirPath,
+	// 	isLeaf: false,
+	// }
+	// return ret
 }
 // label渲染
 const renderLabel = ({ option }) => {
@@ -229,7 +230,6 @@ const renderLabel = ({ option }) => {
 				overflow: 'hidden',
 				'white-space': 'nowrap',
 				'text-overflow': 'ellipsis',
-				// 'padding-top': '1px',
 			},
 		},
 		`${option.label}`,
@@ -240,17 +240,21 @@ const renderPrefix = ({ option }) => {
 	return option.type === 'directory'
 		? null
 		: h('div', {
-				className: 'i-ic:round-insert-drive-file',
+				className: 'i-ic:round-insert-drive-file ml--11px',
 			})
 }
 // 处理节点加载
 const handleNodeLoad = (node) => {
-	// return new Promise((resolve) => {
-	// 	setTimeout(() => {
-	// 		node.children = getDirectoryItem(node.key).children
-	// 		resolve()
-	// 	}, 0)
-	// })
+	console.log(node)
+	return new Promise((resolve) => {
+		setTimeout(async () => {
+			console.log(node.key)
+			console.log(await getDirectoryItem(node.key))
+			node.children = []
+			// node.children = await getDirectoryItem(node.key).children
+			resolve()
+		}, 0)
+	})
 }
 // 处理节点选中项发生变化
 const handleSelectedKeysUpdate = (keys, option, meta) => {
@@ -354,7 +358,7 @@ onMounted(async () => {
 				</div>
 				<div v-if="!state.folderList.length" class="px-20px">
 					<div class="mb-3">尚未打开文件夹。</div>
-					<n-button type="primary" block @click="openFilder()">
+					<n-button type="primary" block @click="openFolder()">
 						打开文件夹
 					</n-button>
 				</div>

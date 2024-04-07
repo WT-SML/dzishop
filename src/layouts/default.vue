@@ -2,8 +2,8 @@
 import titleBar from '~/components/title-bar.vue'
 </script>
 <template>
-	<!-- 标题栏 -->
 	<div class="h-100vh flex flex-col">
+		<!-- 标题栏 -->
 		<titleBar class="flex-shrink-0" />
 		<router-view v-slot="{ Component }" class="flex-grow">
 			<transition name="fade" mode="out-in">
